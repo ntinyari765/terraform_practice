@@ -1,12 +1,3 @@
-terraform {
-    backend "s3" {
-        bucket         = "my-terraform-state-bucket-ntinyari"
-        key            = "global/s3/terraform.tfstate"
-        region         = "us-east-1"
-        dynamodb_table = "my-terraform-state-lock-table-ntinyari"
-        encrypt        = true
-    }
-}
 locals {
   instance_types = {
     dev        = "t3.micro"

@@ -1,19 +1,10 @@
-terraform {
-    backend "s3" {
-        bucket         = "my-terraform-state-bucket-ntinyari"
-        key            = "global/s3/terraform.tfstate"
-        region         = "us-east-1"
-        dynamodb_table = "my-terraform-state-lock-table-ntinyari"
-        encrypt        = true
-    }
-}
 locals {
   instance_types = {
     dev        = "t3.micro"
     staging    = "t3.small"
     production = "t3.micro"
   }
-  instance_type = lookup(local.instance_types, terraform.workspace, "t3.micro")
+  instance_type = "t3.small"
 }
 
 provider "aws" {
@@ -42,7 +33,7 @@ data "aws_subnets" "default" {
   }
 }
 resource "aws_security_group" "instance_sg" {
-    name = "instance-sg-${terraform.workspace}"
+    name = "instance-sg-production"
     vpc_id = data.aws_vpc.default.id
 
     ingress {
@@ -63,7 +54,7 @@ resource "aws_security_group" "instance_sg" {
 }
 
 resource "aws_security_group" "alb_sg" {
-    name = "alb-sg-${terraform.workspace}"
+    name = "alb-sg-production"
     vpc_id = data.aws_vpc.default.id
 
     ingress {
@@ -84,7 +75,7 @@ resource "aws_security_group" "alb_sg" {
 }
 
 resource "aws_launch_template" "web_launch_template" {
-    name_prefix = "web-launch-template-${terraform.workspace}-"
+    name_prefix = "web-launch-template-production-"
     image_id = var.ami_id
     instance_type = local.instance_type
     vpc_security_group_ids = [aws_security_group.instance_sg.id]
@@ -101,7 +92,7 @@ resource "aws_launch_template" "web_launch_template" {
     }
 
 resource "aws_lb_target_group" "web_target_group" {
-    name     = "web-tg-${terraform.workspace}"
+    name     = "web-tg-production"
     port     = var.server_port
     protocol = "HTTP"
     vpc_id   = data.aws_vpc.default.id
@@ -118,7 +109,7 @@ resource "aws_lb_target_group" "web_target_group" {
 }
 
 resource "aws_lb" "web_alb" {
-    name               = "web-alb-${terraform.workspace}"
+    name               = "web-alb-production"
     load_balancer_type = "application"
     security_groups    = [aws_security_group.alb_sg.id]
     subnets            = data.aws_subnets.default.ids
@@ -143,7 +134,7 @@ resource "aws_lb_listener" "web_listener" {
 }
 
 resource "aws_autoscaling_group" "web_asg" {
-    name                      = "web-asg-${terraform.workspace}"
+    name                      = "web-asg-production"
     max_size                  = var.max_size
     min_size                  = var.min_size
     desired_capacity          = var.min_size
@@ -158,7 +149,7 @@ resource "aws_autoscaling_group" "web_asg" {
     }
     tag {
         key                 = "Name"
-        value               = "web-asg-instance-${terraform.workspace}"
+        value               = "web-asg-instance-production"
         propagate_at_launch = true
     }
 } 
