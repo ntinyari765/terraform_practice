@@ -3,12 +3,14 @@ provider "aws" {
 }
 
 module "webserver_cluster" {
-  source = "../../../../modules/services/webserver-cluster"
+  source = "github.com/ntinyari765/terraform-aws-webserver-cluster?ref=v0.0.1"
 
   cluster_name  = "webservers-production"
-  instance_type = "t3.small"
+  environment   = "production"  
   min_size      = 4
   max_size      = 10
+
+  enable_autoscaling = true  
 }
 
 output "alb_dns_name" {

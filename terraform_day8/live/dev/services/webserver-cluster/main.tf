@@ -3,12 +3,13 @@ provider "aws" {
 }
 
 module "webserver_cluster" {
-  source = "../../../../modules/services/webserver-cluster"
+  source = "github.com/ntinyari765/terraform-aws-webserver-cluster?ref=v.0.0.2"
 
-  cluster_name  = "webservers-dev"
-  instance_type = "t3.micro"
-  min_size      = 2
-  max_size      = 4
+  cluster_name  = "webservers-dev"    
+  min_size      = 0
+  max_size      = 0
+
+  enable_deletion_protection = false
 }
 
 output "alb_dns_name" {
