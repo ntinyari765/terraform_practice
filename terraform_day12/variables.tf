@@ -15,4 +15,10 @@ variable "app_version" {
   type        = string
   default     = "v1"
 }
+variable "active_environment" {
+  description = "Which environment is currently active: blue or green"
+  type        = string
+  default     = "blue"
+}
+
 
