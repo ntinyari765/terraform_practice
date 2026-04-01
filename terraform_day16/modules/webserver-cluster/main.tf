@@ -10,14 +10,19 @@ resource "aws_vpc" "new" {
   tags = merge(local.common_tags, {
     Name = "${var.cluster_name}-vpc"
   })
-
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 locals {
   vpc_id = var.use_existing_vpc ? data.aws_vpc.existing[0].id : aws_vpc.new[0].id
+}
+
+data "aws_availability_zones" "available" {
+  state = "available"
+
+  filter {
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
+  }
 }
 
 data "aws_subnets" "default" {
@@ -25,7 +30,13 @@ data "aws_subnets" "default" {
     name   = "vpc-id"
     values = [local.vpc_id]
   }
+
+  filter {
+    name   = "availabilityZone"
+    values = ["us-east-1a", "us-east-1b", "us-east-1c", "us-east-1d", "us-east-1f"]
+  }
 }
+
 locals {
   # Environment flags
   is_production          = var.environment == "production"
@@ -49,11 +60,16 @@ resource "aws_launch_template" "example" {
   name_prefix   = "${var.cluster_name}-"
   image_id      = var.ami
   instance_type = local.instance_type
+  network_interfaces {
+    associate_public_ip_address = true
+    security_groups             = [aws_security_group.instance.id]
+  }
 
   user_data = base64encode(<<-EOF
               #!/bin/bash
-              echo "Hello, World" > index.html
-              nohup busybox httpd -f -p ${var.server_port} &
+              echo "Hello, World" > /tmp/index.html
+              cd /tmp
+              nohup python3 -m http.server ${var.server_port} &
               EOF
   )
 
@@ -67,10 +83,6 @@ resource "aws_launch_template" "example" {
   tags = merge(local.common_tags, {
     Name = "${var.cluster_name}-launch-template"
   })
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "aws_autoscaling_group" "example" {
@@ -104,10 +116,6 @@ resource "aws_security_group" "instance" {
   tags = merge(local.common_tags, {
     Name = "${var.cluster_name}-sg"
   })
-
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 
 resource "aws_security_group_rule" "inbound" {
@@ -117,6 +125,14 @@ resource "aws_security_group_rule" "inbound" {
   from_port         = each.value
   to_port           = each.value
   protocol          = "tcp"
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+resource "aws_security_group_rule" "outbound" {
+  type              = "egress"
+  security_group_id = aws_security_group.instance.id
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
   cidr_blocks       = ["0.0.0.0/0"]
 }
 resource "aws_cloudwatch_metric_alarm" "high_cpu" {

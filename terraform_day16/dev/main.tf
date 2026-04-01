@@ -4,10 +4,14 @@ provider "aws" {
 
 module "webserver_cluster" {
   source = "../modules/webserver-cluster"
-  ami = "ami-05024c2628f651b80"
+
   environment  = "dev"
   cluster_name = "dev-cluster"
   server_port  = 8080
+  ami          = "ami-xxxxxxxxxxxxxxxxx"
+  project_name = "terraform-challenge"
+  team_name    = "devops"
+  alert_email  = ""
 }
 
 output "cluster_name" {
