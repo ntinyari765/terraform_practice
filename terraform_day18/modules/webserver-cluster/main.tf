@@ -67,7 +67,7 @@ resource "aws_launch_template" "example" {
 
   user_data = base64encode(<<-EOF
               #!/bin/bash
-              echo "Hello, World V3" > /tmp/index.html
+              echo "Hello, World V4" > /tmp/index.html
               cd /tmp
               nohup python3 -m http.server ${var.server_port} &
               EOF
