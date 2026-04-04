@@ -1,6 +1,7 @@
 variable "environment" {
   description = "Deployment environment: dev, staging, or production"
   type        = string
+  default     = "dev"
 
   validation {
     condition     = contains(["dev", "staging", "production"], var.environment)
@@ -11,6 +12,7 @@ variable "environment" {
 variable "cluster_name" {
   description = "Name to use for all resources in the cluster"
   type        = string
+  default     = "webserver-cluster-day20"
 
   validation {
     condition     = length(var.cluster_name) <= 40 && can(regex("^[a-z0-9-]+$", var.cluster_name))
@@ -32,11 +34,13 @@ variable "server_port" {
 variable "ami" {
   description = "AMI to use for the EC2 instances"
   type        = string
+  default     = "ami-0622c21dd3d2b1075"
 
   validation {
     condition     = can(regex("^ami-[a-z0-9]+$", var.ami))
     error_message = "AMI must be a valid AMI ID starting with ami-."
   }
+  
 }
 
 variable "use_existing_vpc" {
