@@ -1,5 +1,15 @@
-terraform.tfstate
-terraform.tfstate.backup
+# State files
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Terraform working directory
 .terraform/
-terraform.tfvars
+
+# Variable files that may contain secrets
+*.tfvars
+*.tfvars.json
+
+# Crash logs
+crash.log
 *.log
