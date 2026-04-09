@@ -43,7 +43,7 @@ locals {
   instance_type          = local.is_production ? "t3.small" : "t3.micro"
   min_size               = local.is_production ? 3 : 1
   max_size               = local.is_production ? 10 : 3
-  enable_monitoring      = local.is_production
+  enable_monitoring      = true
   deletion_policy        = local.is_production ? "Retain" : "Delete"
   instance_ingress_ports = toset([tostring(var.server_port)])
 
@@ -67,7 +67,7 @@ resource "aws_launch_template" "example" {
 
   user_data = base64encode(<<-EOF
               #!/bin/bash
-              echo "Hello, World V4" > /tmp/index.html
+              echo "Hello Winjoy, How are you today? " > /tmp/index.html
               cd /tmp
               nohup python3 -m http.server ${var.server_port} &
               EOF
@@ -145,7 +145,7 @@ resource "aws_cloudwatch_metric_alarm" "high_cpu" {
   namespace           = "AWS/EC2"
   period              = 120
   statistic           = "Average"
-  threshold           = 80
+  threshold           = 90
   alarm_description   = "CPU utilization exceeded 80%"
   alarm_actions       = [aws_sns_topic.alerts[0].arn]
 
