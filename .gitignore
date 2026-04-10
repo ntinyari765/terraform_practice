@@ -13,3 +13,5 @@
 # Crash logs
 crash.log
 *.log
+
+*.tfplan
