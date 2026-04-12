@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Terraform CLI Reference</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f0f0f;color:#e8e8e8;line-height:1.6;padding:2rem}
+.header{text-align:center;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid #2a2a2a}
+.header h1{font-size:28px;font-weight:500;color:#fff;margin-bottom:0.5rem}
+.header p{font-size:14px;color:#888}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:12px}
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:10px;padding:1.25rem}
+.card:hover{border-color:#444;transition:border-color 0.2s}
+.cmd{font-family:'SF Mono',Monaco,monospace;font-size:14px;font-weight:500;color:#7dd3fc;margin-bottom:6px}
+.desc{font-size:13px;color:#aaa;margin-bottom:8px}
+.detail{font-size:12px;color:#666;font-style:italic}
+.tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:4px;margin-bottom:8px;font-weight:500}
+.tag.state{background:#1a2a1a;color:#4ade80}
+.tag.plan{background:#1a1a2a;color:#818cf8}
+.tag.infra{background:#2a1a1a;color:#f87171}
+.tag.info{background:#1a2a2a;color:#34d399}
+.tag.config{background:#2a2a1a;color:#fbbf24}
+.footer{text-align:center;margin-top:2rem;font-size:12px;color:#444}
+</style>
+</head>
+<body>
+ 
+<div class="header">
+  <h1>Terraform CLI reference</h1>
+  <p>The top 15 Terraform commands you need to know</p>
+</div>
+ 
+<div class="grid">
+ 
+  <div class="card">
+    <div class="tag config">setup</div>
+    <div class="cmd">terraform init</div>
+    <div class="desc">Downloads providers, configures backend, initializes modules.</div>
+    <div class="detail">Use -upgrade to force provider version upgrades past the lock file.</div>
+  </div>
+ 
+  <div class="card">
+    <div class="tag config">setup</div>
+    <div class="cmd">terraform validate</div>
+    <div class="desc">Checks syntax and internal consistency without connecting to any remote service.</div>
+    <div class="detail">Runs entirely locally. Use in CI before plan.</div>
+  </div>
+ 
+  <div class="card">
+    <div class="tag config">setup</div>
+    <div class="cmd">terraform fmt</div>
+    <div class="desc">Formats code to canonical HCL style.</div>
+    <div class="detail">Use -recursive for subdirectories. Use -check in CI pipelines.</div>
+  </div>
+ 
+  <div class="card">
+    <div class="tag plan">plan</div>
+    <div class="cmd">terraform plan</div>
+    <div class="desc">Shows proposed changes without touching real infrastructure.</div>
+    <div class="detail">Always save with -out=file.tfplan. Never skip this step.</div>
+  </div>
+ 
+  <div class="card">
+    <div class="tag infra">deploy</div>
+    <div class="cmd">terraform apply</div>
+    <div class="desc">Creates or updates infrastructure to match configuration.</div>
+    <div class="detail">Always apply from a saved plan file. Use -auto-approve to skip prompt.</div>
+  </div>
+ 
+  <div class="card">
+    <div class="tag infra">deploy</div>
+    <div class="cmd">terraform destroy</div>
+    <div class="desc">Removes all infrastructure managed by the current configuration.</div>
+    <div class="detail">Equivalent to terraform apply -destroy.</div>
+  </div>
+ 
+  <div class="card">
+    <div class="tag info">read</div>
+    <div class="cmd">terraform output</div>
+    <div class="desc">Reads output values from the current state.</div>
+    <div class="detail">Use -json to return outputs in JSON format for scripting.</div>
+  </div>
+ 
+  <div class="card">
+    <div class="tag state">state</div>
+    <div class="cmd">terraform state list</div>
+    <div class="desc">Lists all resources currently tracked in state.</div>
+    <div class="detail">Useful for quickly seeing what Terraform manages in a workspace.</div>
+  </div>
+ 
+  <div class="card">
+    <div class="tag state">state</div>
+    <div class="cmd">terraform state show</div>
+    <div class="desc">Shows all recorded attributes of a specific resource in state.</div>
+    <div class="detail">Use when you need to inspect current values without opening the state file.</div>
+  </div>
+ 
+  <div class="card">
+    <div class="tag state">state</div>
+    <div class="cmd">terraform state mv</div>
+    <div class="desc">Moves a resource to a new address in state without touching real infrastructure.</div>
+    <div class="detail">Use when refactoring module structure to avoid destroy and recreate.</div>
+  </div>
+ 
+  <div class="card">
+    <div class="tag state">state</div>
+    <div class="cmd">terraform state rm</div>
+    <div class="desc">Removes a resource from state. Real infrastructure is completely untouched.</div>
+    <div class="detail">Use when you want Terraform to stop managing a resource.</div>
+  </div>
+ 
+  <div class="card">
+    <div class="tag state">state</div>
+    <div class="cmd">terraform import</div>
+    <div class="desc">Imports existing infrastructure into state. Does NOT generate .tf configuration.</div>
+    <div class="detail">Write the resource block first. One resource per command.</div>
+  </div>
+ 
+  <div class="card">
+    <div class="tag plan">workspace</div>
+    <div class="cmd">terraform workspace</div>
+    <div class="desc">Manages workspaces — list, new, select, show, delete.</div>
+    <div class="detail">workspace new creates AND switches to the new workspace.</div>
+  </div>
+ 
+  <div class="card">
+    <div class="tag info">read</div>
+    <div class="cmd">terraform providers</div>
+    <div class="desc">Shows providers required by the current configuration and their versions.</div>
+    <div class="detail">Use terraform providers lock to update the lock file.</div>
+  </div>
+ 
+  <div class="card">
+    <div class="tag info">read</div>
+    <div class="cmd">terraform graph</div>
+    <div class="desc">Outputs a dependency graph of all resources in DOT format.</div>
+    <div class="detail">Pipe to Graphviz to visualize complex dependency chains.</div>
+  </div>
+ 
+</div>
+ 
+<div class="footer">Built with Terraform · Deployed on AWS S3 + CloudFront · #30DayTerraformChallenge</div>
+ 
+</body>
+</html>
