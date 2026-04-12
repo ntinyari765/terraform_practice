@@ -3,7 +3,7 @@ terraform {
     organization = "ntinyari-terraform"
 
     workspaces {
-  name = "webserver-cluster-day22"
+  name = "webserver-cluster-dev"
 }
   }
 
